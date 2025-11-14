@@ -1,0 +1,22 @@
+# Netlify Build Configuration
+
+[build]
+  # Directory where the build command runs
+  base = "ui/"
+  
+  # Build command for production
+  command = "npm run build"
+  
+  # Output directory (where build files are created)
+  publish = "build/"
+
+# Redirect rules for React Router (SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Environment variables (optional - configure in Netlify UI)
+[build.environment]
+  NODE_VERSION = "18"
+  REACT_APP_USE_MOCK = "true"

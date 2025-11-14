@@ -13,6 +13,7 @@ const TransactionMonitor = () => {
       const interval = setInterval(loadTransactions, 3000); // Refresh every 3 seconds
       return () => clearInterval(interval);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoRefresh, filter]);
 
   const loadTransactions = async () => {

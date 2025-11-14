@@ -9,6 +9,7 @@ const CustomerProfile = () => {
 
   useEffect(() => {
     loadCustomerData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);
 
   const loadCustomerData = async () => {

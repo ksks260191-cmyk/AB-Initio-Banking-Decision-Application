@@ -185,7 +185,7 @@ export const connectToRealTimeStream = (onMessage) => {
   return () => ws.close();
 };
 
-export default {
+const api = {
   getDashboardMetrics,
   getCustomerProfile,
   getCustomerTransactions,
@@ -195,3 +195,5 @@ export default {
   rejectDecision,
   connectToRealTimeStream
 };
+
+export default api;

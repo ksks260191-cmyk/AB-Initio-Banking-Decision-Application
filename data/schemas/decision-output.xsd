@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://bank.example.com/decision"
+           xmlns="http://bank.example.com/decision"
+           elementFormDefault="qualified">
+
+    <!-- Decision Output Schema for Real-Time Decision Automation -->
+    
+    <xs:element name="DecisionOutput" type="DecisionOutputType"/>
+    
+    <xs:complexType name="DecisionOutputType">
+        <xs:sequence>
+            <xs:element name="DecisionId" type="xs:string"/>
+            <xs:element name="DecisionTimestamp" type="xs:dateTime"/>
+            <xs:element name="DecisionType" type="DecisionTypeEnum"/>
+            <xs:element name="CustomerId" type="xs:string"/>
+            <xs:element name="InputEventId" type="xs:string"/>
+            <xs:element name="DecisionEngine" type="xs:string"/>
+            <xs:element name="DecisionDetails" type="DecisionDetailsType"/>
+            <xs:element name="Actions" type="ActionsType"/>
+            <xs:element name="ExecutionMetrics" type="ExecutionMetricsType"/>
+            <xs:element name="AuditInfo" type="AuditInfoType"/>
+        </xs:sequence>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+    </xs:complexType>
+    
+    <!-- Decision Types -->
+    <xs:simpleType name="DecisionTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="FRAUD_DETECTION"/>
+            <xs:enumeration value="CROSS_SELL"/>
+            <xs:enumeration value="CREDIT_DECISION"/>
+            <xs:enumeration value="CUSTOMER_SERVICE_ROUTING"/>
+            <xs:enumeration value="RISK_ASSESSMENT"/>
+            <xs:enumeration value="OFFER_OPTIMIZATION"/>
+            <xs:enumeration value="CHURN_PREVENTION"/>
+            <xs:enumeration value="COMPLIANCE_CHECK"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Decision Details -->
+    <xs:complexType name="DecisionDetailsType">
+        <xs:sequence>
+            <xs:element name="DecisionOutcome" type="OutcomeEnum"/>
+            <xs:element name="Confidence" type="xs:decimal"/>
+            <xs:element name="Score" type="xs:decimal" minOccurs="0"/>
+            <xs:element name="RulesFired" type="RuleFiredType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="ModelOutputs" type="ModelOutputType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Reasoning" type="xs:string"/>
+            <xs:element name="AlternativeOptions" type="AlternativeOptionType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="OutcomeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="APPROVE"/>
+            <xs:enumeration value="DECLINE"/>
+            <xs:enumeration value="REVIEW"/>
+            <xs:enumeration value="BLOCK"/>
+            <xs:enumeration value="ACCEPT"/>
+            <xs:enumeration value="RECOMMEND"/>
+            <xs:enumeration value="ALERT"/>
+            <xs:enumeration value="ESCALATE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="RuleFiredType">
+        <xs:sequence>
+            <xs:element name="RuleId" type="xs:string"/>
+            <xs:element name="RuleName" type="xs:string"/>
+            <xs:element name="RuleVersion" type="xs:string"/>
+            <xs:element name="RuleCategory" type="xs:string"/>
+            <xs:element name="Matched" type="xs:boolean"/>
+            <xs:element name="Weight" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="ModelOutputType">
+        <xs:sequence>
+            <xs:element name="ModelId" type="xs:string"/>
+            <xs:element name="ModelName" type="xs:string"/>
+            <xs:element name="ModelVersion" type="xs:string"/>
+            <xs:element name="ModelType" type="xs:string"/>
+            <xs:element name="Prediction" type="xs:string"/>
+            <xs:element name="Probability" type="xs:decimal"/>
+            <xs:element name="FeatureImportance" type="FeatureImportanceType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="FeatureImportanceType">
+        <xs:sequence>
+            <xs:element name="FeatureName" type="xs:string"/>
+            <xs:element name="FeatureValue" type="xs:string"/>
+            <xs:element name="Importance" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="AlternativeOptionType">
+        <xs:sequence>
+            <xs:element name="Rank" type="xs:int"/>
+            <xs:element name="Option" type="xs:string"/>
+            <xs:element name="Score" type="xs:decimal"/>
+            <xs:element name="Reasoning" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Actions -->
+    <xs:complexType name="ActionsType">
+        <xs:sequence>
+            <xs:element name="PrimaryAction" type="ActionType"/>
+            <xs:element name="SecondaryActions" type="ActionType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="ActionType">
+        <xs:sequence>
+            <xs:element name="ActionId" type="xs:string"/>
+            <xs:element name="ActionType" type="ActionTypeEnum"/>
+            <xs:element name="ActionDetails" type="ActionDetailsType"/>
+            <xs:element name="ExecutionStatus" type="ExecutionStatusEnum"/>
+            <xs:element name="ExecutionTimestamp" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="ExecutionResult" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="ActionTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SEND_NOTIFICATION"/>
+            <xs:enumeration value="BLOCK_TRANSACTION"/>
+            <xs:enumeration value="APPROVE_TRANSACTION"/>
+            <xs:enumeration value="REQUEST_VERIFICATION"/>
+            <xs:enumeration value="SEND_OFFER"/>
+            <xs:enumeration value="ROUTE_TO_AGENT"/>
+            <xs:enumeration value="UPDATE_LIMIT"/>
+            <xs:enumeration value="TRIGGER_WORKFLOW"/>
+            <xs:enumeration value="LOG_ALERT"/>
+            <xs:enumeration value="UPDATE_PROFILE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="ActionDetailsType">
+        <xs:choice>
+            <xs:element name="NotificationDetails" type="NotificationDetailsType"/>
+            <xs:element name="TransactionDecision" type="TransactionDecisionType"/>
+            <xs:element name="OfferDetails" type="OfferDetailsType"/>
+            <xs:element name="RoutingDetails" type="RoutingDetailsType"/>
+            <xs:element name="LimitUpdateDetails" type="LimitUpdateDetailsType"/>
+            <xs:element name="GenericAction" type="GenericActionType"/>
+        </xs:choice>
+    </xs:complexType>
+    
+    <xs:complexType name="NotificationDetailsType">
+        <xs:sequence>
+            <xs:element name="Channel" type="xs:string"/>
+            <xs:element name="MessageTemplate" type="xs:string"/>
+            <xs:element name="MessageContent" type="xs:string"/>
+            <xs:element name="Priority" type="xs:string"/>
+            <xs:element name="ExpiryTime" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="TransactionDecisionType">
+        <xs:sequence>
+            <xs:element name="TransactionId" type="xs:string"/>
+            <xs:element name="Decision" type="xs:string"/>
+            <xs:element name="AuthorizationCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="DeclineReason" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="OfferDetailsType">
+        <xs:sequence>
+            <xs:element name="OfferId" type="xs:string"/>
+            <xs:element name="ProductCode" type="xs:string"/>
+            <xs:element name="ProductName" type="xs:string"/>
+            <xs:element name="OfferValue" type="xs:decimal" minOccurs="0"/>
+            <xs:element name="DeliveryChannel" type="xs:string"/>
+            <xs:element name="PersonalizationAttributes" type="PersonalizationAttributeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="ExpiryDate" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="PersonalizationAttributeType">
+        <xs:sequence>
+            <xs:element name="AttributeName" type="xs:string"/>
+            <xs:element name="AttributeValue" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="RoutingDetailsType">
+        <xs:sequence>
+            <xs:element name="AgentId" type="xs:string" minOccurs="0"/>
+            <xs:element name="AgentSkillSet" type="xs:string"/>
+            <xs:element name="QueuePriority" type="xs:int"/>
+            <xs:element name="PreLoadContext" type="xs:string" maxOccurs="unbounded"/>
+            <xs:element name="SuggestedScripts" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="LimitUpdateDetailsType">
+        <xs:sequence>
+            <xs:element name="AccountNumber" type="xs:string"/>
+            <xs:element name="LimitType" type="xs:string"/>
+            <xs:element name="CurrentLimit" type="xs:decimal"/>
+            <xs:element name="NewLimit" type="xs:decimal"/>
+            <xs:element name="EffectiveDate" type="xs:dateTime"/>
+            <xs:element name="Reason" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="GenericActionType">
+        <xs:sequence>
+            <xs:element name="ActionDescription" type="xs:string"/>
+            <xs:element name="Parameters" type="ParameterType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="ParameterType">
+        <xs:sequence>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Value" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="ExecutionStatusEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PENDING"/>
+            <xs:enumeration value="EXECUTED"/>
+            <xs:enumeration value="FAILED"/>
+            <xs:enumeration value="SKIPPED"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Execution Metrics -->
+    <xs:complexType name="ExecutionMetricsType">
+        <xs:sequence>
+            <xs:element name="ProfileRetrievalTimeMs" type="xs:decimal"/>
+            <xs:element name="FeatureComputationTimeMs" type="xs:decimal"/>
+            <xs:element name="RuleEvaluationTimeMs" type="xs:decimal"/>
+            <xs:element name="ModelExecutionTimeMs" type="xs:decimal"/>
+            <xs:element name="TotalDecisionTimeMs" type="xs:decimal"/>
+            <xs:element name="ActionExecutionTimeMs" type="xs:decimal"/>
+            <xs:element name="EndToEndLatencyMs" type="xs:decimal"/>
+            <xs:element name="DataFreshnessSeconds" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Audit Information -->
+    <xs:complexType name="AuditInfoType">
+        <xs:sequence>
+            <xs:element name="ProcessingNode" type="xs:string"/>
+            <xs:element name="EngineVersion" type="xs:string"/>
+            <xs:element name="ConfigurationVersion" type="xs:string"/>
+            <xs:element name="ComplianceFlags" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="RegulatoryRequirements" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LogLevel" type="LogLevelEnum"/>
+            <xs:element name="TraceId" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="LogLevelEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DEBUG"/>
+            <xs:enumeration value="INFO"/>
+            <xs:enumeration value="WARNING"/>
+            <xs:enumeration value="ERROR"/>
+            <xs:enumeration value="CRITICAL"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>

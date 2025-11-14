@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://bank.example.com/customer"
+           xmlns="http://bank.example.com/customer"
+           elementFormDefault="qualified">
+
+    <!-- Customer Profile Schema for 360° View -->
+    
+    <xs:element name="CustomerProfile" type="CustomerProfileType"/>
+    
+    <xs:complexType name="CustomerProfileType">
+        <xs:sequence>
+            <xs:element name="CustomerId" type="xs:string"/>
+            <xs:element name="PersonalInfo" type="PersonalInfoType"/>
+            <xs:element name="ContactInfo" type="ContactInfoType"/>
+            <xs:element name="Accounts" type="AccountsType"/>
+            <xs:element name="BehaviorProfile" type="BehaviorProfileType"/>
+            <xs:element name="RiskProfile" type="RiskProfileType"/>
+            <xs:element name="Preferences" type="PreferencesType"/>
+            <xs:element name="Relationships" type="RelationshipsType"/>
+            <xs:element name="Metadata" type="MetadataType"/>
+        </xs:sequence>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+        <xs:attribute name="lastUpdated" type="xs:dateTime" use="required"/>
+    </xs:complexType>
+    
+    <!-- Personal Information -->
+    <xs:complexType name="PersonalInfoType">
+        <xs:sequence>
+            <xs:element name="FirstName" type="xs:string"/>
+            <xs:element name="LastName" type="xs:string"/>
+            <xs:element name="MiddleName" type="xs:string" minOccurs="0"/>
+            <xs:element name="DateOfBirth" type="xs:date"/>
+            <xs:element name="SSN" type="xs:string"/>
+            <xs:element name="Gender" type="GenderType" minOccurs="0"/>
+            <xs:element name="Citizenship" type="xs:string"/>
+            <xs:element name="EmploymentStatus" type="EmploymentStatusType"/>
+            <xs:element name="Occupation" type="xs:string" minOccurs="0"/>
+            <xs:element name="AnnualIncome" type="xs:decimal" minOccurs="0"/>
+            <xs:element name="EducationLevel" type="EducationLevelType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Contact Information -->
+    <xs:complexType name="ContactInfoType">
+        <xs:sequence>
+            <xs:element name="PrimaryPhone" type="PhoneType"/>
+            <xs:element name="SecondaryPhone" type="PhoneType" minOccurs="0"/>
+            <xs:element name="Email" type="xs:string"/>
+            <xs:element name="Address" type="AddressType" maxOccurs="unbounded"/>
+            <xs:element name="PreferredContactMethod" type="ContactMethodType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="PhoneType">
+        <xs:sequence>
+            <xs:element name="Number" type="xs:string"/>
+            <xs:element name="Type" type="PhoneTypeEnum"/>
+            <xs:element name="Verified" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="AddressType">
+        <xs:sequence>
+            <xs:element name="Street1" type="xs:string"/>
+            <xs:element name="Street2" type="xs:string" minOccurs="0"/>
+            <xs:element name="City" type="xs:string"/>
+            <xs:element name="State" type="xs:string"/>
+            <xs:element name="ZipCode" type="xs:string"/>
+            <xs:element name="Country" type="xs:string"/>
+            <xs:element name="Type" type="AddressTypeEnum"/>
+            <xs:element name="IsPrimary" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Account Information -->
+    <xs:complexType name="AccountsType">
+        <xs:sequence>
+            <xs:element name="CheckingAccounts" type="CheckingAccountType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="SavingsAccounts" type="SavingsAccountType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="CreditCards" type="CreditCardType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Loans" type="LoanType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="InvestmentAccounts" type="InvestmentAccountType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="CheckingAccountType">
+        <xs:sequence>
+            <xs:element name="AccountNumber" type="xs:string"/>
+            <xs:element name="AccountType" type="xs:string"/>
+            <xs:element name="OpenDate" type="xs:date"/>
+            <xs:element name="Status" type="AccountStatusType"/>
+            <xs:element name="CurrentBalance" type="xs:decimal"/>
+            <xs:element name="AvailableBalance" type="xs:decimal"/>
+            <xs:element name="AverageMonthlyBalance" type="xs:decimal"/>
+            <xs:element name="OverdraftProtection" type="xs:boolean"/>
+            <xs:element name="MonthlyFee" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="SavingsAccountType">
+        <xs:sequence>
+            <xs:element name="AccountNumber" type="xs:string"/>
+            <xs:element name="AccountType" type="xs:string"/>
+            <xs:element name="OpenDate" type="xs:date"/>
+            <xs:element name="Status" type="AccountStatusType"/>
+            <xs:element name="CurrentBalance" type="xs:decimal"/>
+            <xs:element name="InterestRate" type="xs:decimal"/>
+            <xs:element name="YTDInterestEarned" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="CreditCardType">
+        <xs:sequence>
+            <xs:element name="CardNumber" type="xs:string"/>
+            <xs:element name="CardType" type="xs:string"/>
+            <xs:element name="OpenDate" type="xs:date"/>
+            <xs:element name="Status" type="AccountStatusType"/>
+            <xs:element name="CreditLimit" type="xs:decimal"/>
+            <xs:element name="CurrentBalance" type="xs:decimal"/>
+            <xs:element name="AvailableCredit" type="xs:decimal"/>
+            <xs:element name="APR" type="xs:decimal"/>
+            <xs:element name="RewardsProgram" type="xs:string" minOccurs="0"/>
+            <xs:element name="RewardsBalance" type="xs:decimal" minOccurs="0"/>
+            <xs:element name="PaymentHistory" type="PaymentHistoryType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="LoanType">
+        <xs:sequence>
+            <xs:element name="LoanNumber" type="xs:string"/>
+            <xs:element name="LoanType" type="LoanTypeEnum"/>
+            <xs:element name="OriginationDate" type="xs:date"/>
+            <xs:element name="Status" type="AccountStatusType"/>
+            <xs:element name="OriginalAmount" type="xs:decimal"/>
+            <xs:element name="CurrentBalance" type="xs:decimal"/>
+            <xs:element name="InterestRate" type="xs:decimal"/>
+            <xs:element name="MonthlyPayment" type="xs:decimal"/>
+            <xs:element name="MaturityDate" type="xs:date"/>
+            <xs:element name="PaymentHistory" type="PaymentHistoryType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="InvestmentAccountType">
+        <xs:sequence>
+            <xs:element name="AccountNumber" type="xs:string"/>
+            <xs:element name="AccountType" type="InvestmentTypeEnum"/>
+            <xs:element name="OpenDate" type="xs:date"/>
+            <xs:element name="Status" type="AccountStatusType"/>
+            <xs:element name="MarketValue" type="xs:decimal"/>
+            <xs:element name="CostBasis" type="xs:decimal"/>
+            <xs:element name="UnrealizedGainLoss" type="xs:decimal"/>
+            <xs:element name="YTDReturn" type="xs:decimal"/>
+            <xs:element name="RiskTolerance" type="RiskToleranceType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="PaymentHistoryType">
+        <xs:sequence>
+            <xs:element name="OnTimePayments" type="xs:int"/>
+            <xs:element name="LatePayments" type="xs:int"/>
+            <xs:element name="MissedPayments" type="xs:int"/>
+            <xs:element name="LastPaymentDate" type="xs:date" minOccurs="0"/>
+            <xs:element name="LastPaymentAmount" type="xs:decimal" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Behavior Profile -->
+    <xs:complexType name="BehaviorProfileType">
+        <xs:sequence>
+            <xs:element name="CustomerSince" type="xs:date"/>
+            <xs:element name="LifetimeValue" type="xs:decimal"/>
+            <xs:element name="CustomerTier" type="CustomerTierType"/>
+            <xs:element name="ProductAffinityScores" type="ProductAffinityType"/>
+            <xs:element name="ChannelPreferences" type="ChannelPreferencesType"/>
+            <xs:element name="TransactionPatterns" type="TransactionPatternsType"/>
+            <xs:element name="EngagementScore" type="xs:decimal"/>
+            <xs:element name="ChurnRiskScore" type="xs:decimal"/>
+            <xs:element name="LifeStage" type="LifeStageType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="ProductAffinityType">
+        <xs:sequence>
+            <xs:element name="CheckingAffinity" type="xs:decimal"/>
+            <xs:element name="SavingsAffinity" type="xs:decimal"/>
+            <xs:element name="CreditCardAffinity" type="xs:decimal"/>
+            <xs:element name="MortgageAffinity" type="xs:decimal"/>
+            <xs:element name="AutoLoanAffinity" type="xs:decimal"/>
+            <xs:element name="InvestmentAffinity" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="ChannelPreferencesType">
+        <xs:sequence>
+            <xs:element name="MobileAppUsage" type="xs:decimal"/>
+            <xs:element name="OnlineBankingUsage" type="xs:decimal"/>
+            <xs:element name="BranchVisitFrequency" type="xs:decimal"/>
+            <xs:element name="ATMUsageFrequency" type="xs:decimal"/>
+            <xs:element name="CallCenterContactFrequency" type="xs:decimal"/>
+            <xs:element name="PreferredChannel" type="ChannelType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="TransactionPatternsType">
+        <xs:sequence>
+            <xs:element name="AverageMonthlyTransactions" type="xs:int"/>
+            <xs:element name="AverageTransactionAmount" type="xs:decimal"/>
+            <xs:element name="LargestTransaction90Days" type="xs:decimal"/>
+            <xs:element name="TypicalMerchantCategories" type="MerchantCategoryType" maxOccurs="unbounded"/>
+            <xs:element name="GeographicPatterns" type="GeographicPatternType" maxOccurs="unbounded"/>
+            <xs:element name="PeakTransactionHours" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="MerchantCategoryType">
+        <xs:sequence>
+            <xs:element name="Category" type="xs:string"/>
+            <xs:element name="FrequencyPerMonth" type="xs:decimal"/>
+            <xs:element name="AverageAmount" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="GeographicPatternType">
+        <xs:sequence>
+            <xs:element name="City" type="xs:string"/>
+            <xs:element name="State" type="xs:string"/>
+            <xs:element name="Country" type="xs:string"/>
+            <xs:element name="Frequency" type="xs:decimal"/>
+            <xs:element name="LastVisit" type="xs:date" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Risk Profile -->
+    <xs:complexType name="RiskProfileType">
+        <xs:sequence>
+            <xs:element name="CreditScore" type="xs:int"/>
+            <xs:element name="CreditScoreDate" type="xs:date"/>
+            <xs:element name="CreditScoreSource" type="xs:string"/>
+            <xs:element name="FraudRiskScore" type="xs:decimal"/>
+            <xs:element name="CreditRiskScore" type="xs:decimal"/>
+            <xs:element name="OverallRiskRating" type="RiskRatingType"/>
+            <xs:element name="WatchListStatus" type="xs:boolean"/>
+            <xs:element name="ComplianceFlags" type="ComplianceFlagType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="ComplianceFlagType">
+        <xs:sequence>
+            <xs:element name="FlagType" type="xs:string"/>
+            <xs:element name="FlagDate" type="xs:date"/>
+            <xs:element name="Status" type="xs:string"/>
+            <xs:element name="Description" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Preferences -->
+    <xs:complexType name="PreferencesType">
+        <xs:sequence>
+            <xs:element name="MarketingOptIn" type="xs:boolean"/>
+            <xs:element name="EmailOptIn" type="xs:boolean"/>
+            <xs:element name="SMSOptIn" type="xs:boolean"/>
+            <xs:element name="PushNotificationOptIn" type="xs:boolean"/>
+            <xs:element name="PaperlessStatements" type="xs:boolean"/>
+            <xs:element name="PreferredLanguage" type="xs:string"/>
+            <xs:element name="AccessibilityNeeds" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Relationships -->
+    <xs:complexType name="RelationshipsType">
+        <xs:sequence>
+            <xs:element name="PrimaryBankRelationship" type="xs:boolean"/>
+            <xs:element name="HouseholdId" type="xs:string" minOccurs="0"/>
+            <xs:element name="RelatedCustomers" type="RelatedCustomerType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="AssignedBanker" type="xs:string" minOccurs="0"/>
+            <xs:element name="AssignedAdvisor" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="RelatedCustomerType">
+        <xs:sequence>
+            <xs:element name="CustomerId" type="xs:string"/>
+            <xs:element name="RelationshipType" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Metadata -->
+    <xs:complexType name="MetadataType">
+        <xs:sequence>
+            <xs:element name="CreatedDate" type="xs:dateTime"/>
+            <xs:element name="LastModifiedDate" type="xs:dateTime"/>
+            <xs:element name="DataQualityScore" type="xs:decimal"/>
+            <xs:element name="ProfileCompleteness" type="xs:decimal"/>
+            <xs:element name="LastVerifiedDate" type="xs:date" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Enumerations -->
+    <xs:simpleType name="GenderType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Male"/>
+            <xs:enumeration value="Female"/>
+            <xs:enumeration value="Other"/>
+            <xs:enumeration value="PreferNotToSay"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="EmploymentStatusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Employed"/>
+            <xs:enumeration value="SelfEmployed"/>
+            <xs:enumeration value="Unemployed"/>
+            <xs:enumeration value="Retired"/>
+            <xs:enumeration value="Student"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="EducationLevelType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="HighSchool"/>
+            <xs:enumeration value="Associate"/>
+            <xs:enumeration value="Bachelor"/>
+            <xs:enumeration value="Master"/>
+            <xs:enumeration value="Doctorate"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="PhoneTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Mobile"/>
+            <xs:enumeration value="Home"/>
+            <xs:enumeration value="Work"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="AddressTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Primary"/>
+            <xs:enumeration value="Mailing"/>
+            <xs:enumeration value="Work"/>
+            <xs:enumeration value="Previous"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="ContactMethodType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Email"/>
+            <xs:enumeration value="Phone"/>
+            <xs:enumeration value="SMS"/>
+            <xs:enumeration value="Mail"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="AccountStatusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Active"/>
+            <xs:enumeration value="Inactive"/>
+            <xs:enumeration value="Closed"/>
+            <xs:enumeration value="Frozen"/>
+            <xs:enumeration value="UnderReview"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="LoanTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Mortgage"/>
+            <xs:enumeration value="AutoLoan"/>
+            <xs:enumeration value="PersonalLoan"/>
+            <xs:enumeration value="StudentLoan"/>
+            <xs:enumeration value="HomeEquityLoan"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="InvestmentTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Brokerage"/>
+            <xs:enumeration value="IRA"/>
+            <xs:enumeration value="401k"/>
+            <xs:enumeration value="ManagedPortfolio"/>
+            <xs:enumeration value="TrustAccount"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="RiskToleranceType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Conservative"/>
+            <xs:enumeration value="Moderate"/>
+            <xs:enumeration value="Aggressive"/>
+            <xs:enumeration value="VeryAggressive"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="CustomerTierType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Basic"/>
+            <xs:enumeration value="Silver"/>
+            <xs:enumeration value="Gold"/>
+            <xs:enumeration value="Platinum"/>
+            <xs:enumeration value="PrivateBanking"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="LifeStageType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="YoungAdult"/>
+            <xs:enumeration value="EarlyCareer"/>
+            <xs:enumeration value="MidCareer"/>
+            <xs:enumeration value="PreRetirement"/>
+            <xs:enumeration value="Retirement"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="ChannelType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Mobile"/>
+            <xs:enumeration value="Online"/>
+            <xs:enumeration value="Branch"/>
+            <xs:enumeration value="ATM"/>
+            <xs:enumeration value="Phone"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="RiskRatingType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="VeryLow"/>
+            <xs:enumeration value="Low"/>
+            <xs:enumeration value="Medium"/>
+            <xs:enumeration value="High"/>
+            <xs:enumeration value="VeryHigh"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>

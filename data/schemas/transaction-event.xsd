@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://bank.example.com/transaction"
+           xmlns="http://bank.example.com/transaction"
+           elementFormDefault="qualified">
+
+    <!-- Transaction Event Schema for Real-Time Processing -->
+    
+    <xs:element name="TransactionEvent" type="TransactionEventType"/>
+    
+    <xs:complexType name="TransactionEventType">
+        <xs:sequence>
+            <xs:element name="EventId" type="xs:string"/>
+            <xs:element name="EventType" type="EventTypeEnum"/>
+            <xs:element name="EventTimestamp" type="xs:dateTime"/>
+            <xs:element name="CustomerId" type="xs:string"/>
+            <xs:element name="AccountInfo" type="AccountInfoType"/>
+            <xs:element name="TransactionDetails" type="TransactionDetailsType"/>
+            <xs:element name="ChannelInfo" type="ChannelInfoType"/>
+            <xs:element name="LocationInfo" type="LocationInfoType" minOccurs="0"/>
+            <xs:element name="DeviceInfo" type="DeviceInfoType" minOccurs="0"/>
+            <xs:element name="RiskIndicators" type="RiskIndicatorsType" minOccurs="0"/>
+            <xs:element name="Metadata" type="EventMetadataType"/>
+        </xs:sequence>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+    </xs:complexType>
+    
+    <!-- Event Types -->
+    <xs:simpleType name="EventTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PURCHASE"/>
+            <xs:enumeration value="ATM_WITHDRAWAL"/>
+            <xs:enumeration value="ATM_DEPOSIT"/>
+            <xs:enumeration value="TRANSFER"/>
+            <xs:enumeration value="PAYMENT"/>
+            <xs:enumeration value="DEPOSIT"/>
+            <xs:enumeration value="WITHDRAWAL"/>
+            <xs:enumeration value="CHECK_DEPOSIT"/>
+            <xs:enumeration value="LOAN_PAYMENT"/>
+            <xs:enumeration value="CREDIT_CARD_PAYMENT"/>
+            <xs:enumeration value="BALANCE_INQUIRY"/>
+            <xs:enumeration value="LOGIN"/>
+            <xs:enumeration value="LOGOUT"/>
+            <xs:enumeration value="PROFILE_UPDATE"/>
+            <xs:enumeration value="CUSTOMER_SERVICE_CALL"/>
+            <xs:enumeration value="ACCOUNT_OPENING"/>
+            <xs:enumeration value="ACCOUNT_CLOSURE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Account Information -->
+    <xs:complexType name="AccountInfoType">
+        <xs:sequence>
+            <xs:element name="AccountNumber" type="xs:string"/>
+            <xs:element name="AccountType" type="AccountTypeEnum"/>
+            <xs:element name="BusinessUnit" type="BusinessUnitEnum"/>
+            <xs:element name="CurrentBalance" type="xs:decimal" minOccurs="0"/>
+            <xs:element name="AvailableBalance" type="xs:decimal" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="AccountTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Checking"/>
+            <xs:enumeration value="Savings"/>
+            <xs:enumeration value="CreditCard"/>
+            <xs:enumeration value="Loan"/>
+            <xs:enumeration value="Investment"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="BusinessUnitEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RetailBanking"/>
+            <xs:enumeration value="CreditCards"/>
+            <xs:enumeration value="Lending"/>
+            <xs:enumeration value="WealthManagement"/>
+            <xs:enumeration value="Treasury"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Transaction Details -->
+    <xs:complexType name="TransactionDetailsType">
+        <xs:sequence>
+            <xs:element name="TransactionId" type="xs:string"/>
+            <xs:element name="TransactionType" type="xs:string"/>
+            <xs:element name="Amount" type="xs:decimal"/>
+            <xs:element name="Currency" type="xs:string"/>
+            <xs:element name="Description" type="xs:string" minOccurs="0"/>
+            <xs:element name="MerchantInfo" type="MerchantInfoType" minOccurs="0"/>
+            <xs:element name="Status" type="TransactionStatusEnum"/>
+            <xs:element name="AuthorizationCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="DeclineReason" type="xs:string" minOccurs="0"/>
+            <xs:element name="RecurringFlag" type="xs:boolean" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="MerchantInfoType">
+        <xs:sequence>
+            <xs:element name="MerchantId" type="xs:string"/>
+            <xs:element name="MerchantName" type="xs:string"/>
+            <xs:element name="MerchantCategory" type="xs:string"/>
+            <xs:element name="MCC" type="xs:string"/>
+            <xs:element name="MerchantLocation" type="LocationInfoType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="TransactionStatusEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PENDING"/>
+            <xs:enumeration value="APPROVED"/>
+            <xs:enumeration value="DECLINED"/>
+            <xs:enumeration value="BLOCKED"/>
+            <xs:enumeration value="UNDER_REVIEW"/>
+            <xs:enumeration value="COMPLETED"/>
+            <xs:enumeration value="REVERSED"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Channel Information -->
+    <xs:complexType name="ChannelInfoType">
+        <xs:sequence>
+            <xs:element name="Channel" type="ChannelEnum"/>
+            <xs:element name="SubChannel" type="xs:string" minOccurs="0"/>
+            <xs:element name="ChannelSessionId" type="xs:string" minOccurs="0"/>
+            <xs:element name="UserAgent" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="ChannelEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MobileApp"/>
+            <xs:enumeration value="OnlineBanking"/>
+            <xs:enumeration value="ATM"/>
+            <xs:enumeration value="Branch"/>
+            <xs:enumeration value="CallCenter"/>
+            <xs:enumeration value="PointOfSale"/>
+            <xs:enumeration value="ThirdPartyAPI"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Location Information -->
+    <xs:complexType name="LocationInfoType">
+        <xs:sequence>
+            <xs:element name="Street" type="xs:string" minOccurs="0"/>
+            <xs:element name="City" type="xs:string"/>
+            <xs:element name="State" type="xs:string" minOccurs="0"/>
+            <xs:element name="Country" type="xs:string"/>
+            <xs:element name="ZipCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="Latitude" type="xs:decimal" minOccurs="0"/>
+            <xs:element name="Longitude" type="xs:decimal" minOccurs="0"/>
+            <xs:element name="IPAddress" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Device Information -->
+    <xs:complexType name="DeviceInfoType">
+        <xs:sequence>
+            <xs:element name="DeviceId" type="xs:string"/>
+            <xs:element name="DeviceType" type="DeviceTypeEnum"/>
+            <xs:element name="DeviceFingerprint" type="xs:string"/>
+            <xs:element name="OS" type="xs:string" minOccurs="0"/>
+            <xs:element name="AppVersion" type="xs:string" minOccurs="0"/>
+            <xs:element name="IsRegistered" type="xs:boolean"/>
+            <xs:element name="IsTrusted" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="DeviceTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Mobile"/>
+            <xs:enumeration value="Tablet"/>
+            <xs:enumeration value="Desktop"/>
+            <xs:enumeration value="ATM"/>
+            <xs:enumeration value="POS"/>
+            <xs:enumeration value="Unknown"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Risk Indicators -->
+    <xs:complexType name="RiskIndicatorsType">
+        <xs:sequence>
+            <xs:element name="VelocityCheck" type="VelocityCheckType"/>
+            <xs:element name="GeographicAnomaly" type="xs:boolean"/>
+            <xs:element name="AmountAnomaly" type="xs:boolean"/>
+            <xs:element name="MerchantCategoryAnomaly" type="xs:boolean"/>
+            <xs:element name="DeviceAnomaly" type="xs:boolean"/>
+            <xs:element name="BehaviorScore" type="xs:decimal"/>
+            <xs:element name="PreFraudScore" type="xs:decimal" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="VelocityCheckType">
+        <xs:sequence>
+            <xs:element name="TransactionsLast1Hour" type="xs:int"/>
+            <xs:element name="TransactionsLast24Hours" type="xs:int"/>
+            <xs:element name="AmountLast1Hour" type="xs:decimal"/>
+            <xs:element name="AmountLast24Hours" type="xs:decimal"/>
+            <xs:element name="VelocityFlag" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Event Metadata -->
+    <xs:complexType name="EventMetadataType">
+        <xs:sequence>
+            <xs:element name="SourceSystem" type="xs:string"/>
+            <xs:element name="IngestionTimestamp" type="xs:dateTime"/>
+            <xs:element name="ProcessingTimestamp" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="CorrelationId" type="xs:string" minOccurs="0"/>
+            <xs:element name="Priority" type="PriorityEnum"/>
+            <xs:element name="Tags" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:simpleType name="PriorityEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LOW"/>
+            <xs:enumeration value="NORMAL"/>
+            <xs:enumeration value="HIGH"/>
+            <xs:enumeration value="CRITICAL"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>

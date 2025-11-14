@@ -1,0 +1,21 @@
+ProductCode,ProductName,ProductCategory,TargetSegment,MinCreditScore,MinIncome,InterestRate,Fee,RewardsProgram,Description
+PRD-001,Premium Checking,Checking,Gold|Platinum,700,50,00,000,0.00,0.00,,No minimum balance, unlimited transactions, free ATM withdrawals
+PRD-002,High-Yield Savings,Savings,All,650,0,2.50,0.00,,2.5% APY on balances over ₹8,33,000
+PRD-003,Cash Back Credit Card,CreditCard,Silver|Gold,680,33,33,000,15.99,7,916.00,2% Cash Back,2% cash back on all purchases
+PRD-004,Travel Rewards Card,CreditCard,Gold|Platinum,720,62,50,000,16.99,12,500.00,3X Points on Travel,3X points on travel and dining
+PRD-005,Platinum Elite Card,CreditCard,Platinum|PrivateBanking,780,83,33,000,14.99,45,833.00,5X Points Premium,5X points everywhere plus luxury benefits
+PRD-006,Personal Loan,Loan,All,680,29,16,000,7.99,0.00,,Unsecured personal loans up to ₹41,66,000
+PRD-007,Auto Loan,Loan,All,700,33,33,000,4.25,0.00,,New and used car financing
+PRD-008,Mortgage,Loan,Gold|Platinum|PrivateBanking,720,66,66,000,6.50,0.00,,30-year fixed rate mortgage
+PRD-009,Index Fund Portfolio,Investment,Gold|Platinum|PrivateBanking,700,62,50,000,0.00,0.50% mgmt fee,,Diversified index fund portfolio
+PRD-010,Managed Retirement Account,Investment,Gold|Platinum|PrivateBanking,700,50,00,000,0.00,0.75% mgmt fee,,Professionally managed retirement portfolio
+PRD-011,CD Ladder 12-Month,Savings,All,650,0,3.00,0.00,,Certificate of Deposit with 3% APY
+PRD-012,Money Market Account,Savings,Gold|Platinum,700,20,83,000,1.75,0.00,,High-yield money market with check writing
+PRD-013,Student Checking,Checking,Basic|Silver,600,0,0.00,0.00,,Free checking for students
+PRD-014,Business Checking,Checking,All,680,0,0.00,1,250.00,,Business checking with online bill pay
+PRD-015,Home Equity Line,Loan,Gold|Platinum,740,66,66,000,7.25,0.00,,Variable rate home equity credit line
+PRD-016,Wealth Management,Investment,PrivateBanking,750,1,25,00,000,0.00,1.00% mgmt fee,,Full-service wealth management
+PRD-017,College Savings 529,Investment,All,650,0,0.00,0.25% mgmt fee,,Tax-advantaged college savings plan
+PRD-018,Small Business Loan,Loan,All,700,0,8.50,0.00,,Business loans up to ₹4,16,66,000
+PRD-019,Rewards Checking,Checking,Silver|Gold,680,41,66,000,0.50,0.00,1% Cash Back,Earn 1% cash back on debit purchases
+PRD-020,Premium Savings,Savings,Gold|Platinum,720,50,00,000,3.25,0.00,,Premium savings with tiered interest rates

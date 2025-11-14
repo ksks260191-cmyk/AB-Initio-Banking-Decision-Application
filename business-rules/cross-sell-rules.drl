@@ -1,0 +1,569 @@
+# Cross-Sell Decision Rules for Banking Products
+# Format: Drools Rule Language (DRL) Style
+# Purpose: Real-time product recommendation engine
+
+package com.bank.crosssell.rules
+
+import com.bank.model.CustomerProfile
+import com.bank.model.TransactionEvent
+import com.bank.model.ProductOffer
+import com.bank.model.DecisionContext
+
+global DecisionContext context
+
+# ============================================================================
+# RULE SET 1: INVESTMENT PRODUCT CROSS-SELL
+# ============================================================================
+
+rule "Large Deposit - Investment Opportunity"
+    salience 100
+    when
+        $event : TransactionEvent(
+            eventType == "DEPOSIT" || eventType == "CHECK_DEPOSIT",
+            amount >= 4166666
+        )
+        $customer : CustomerProfile(
+            customerId == $event.customerId,
+            hasInvestmentAccount == false,
+            lifetimeValue > 8333333,
+            customerTier in ("Gold", "Platinum", "PrivateBanking")
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-009");
+        offer.setProductName("Index Fund Portfolio");
+        offer.setScore(0.88);
+        offer.setReason("Large deposit detected - investment opportunity");
+        offer.setSuggestedAmount($event.amount * 0.70); // Suggest 70% of deposit
+        offer.setChannel("MobileApp");
+        offer.setPriority("HIGH");
+        offer.setExpiryHours(48);
+        offer.setPersonalization(
+            "Congratulations on your ₹" + formatINR($event.amount) + " deposit! " +
+            "Make your money work harder with our Index Fund Portfolio. " +
+            "Estimated annual return: 7-9%."
+        );
+        context.addOffer(offer);
+        context.setDecision("RECOMMEND_INVESTMENT");
+end
+
+rule "High Savings Balance - Wealth Management"
+    salience 95
+    when
+        $customer : CustomerProfile(
+            savingsBalance >= 41666666,
+            hasWealthManagement == false,
+            customerTier in ("Platinum", "PrivateBanking"),
+            creditScore >= 750
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-016");
+        offer.setProductName("Wealth Management");
+        offer.setScore(0.92);
+        offer.setReason("High net worth - wealth management opportunity");
+        offer.setChannel("PersonalBanker");
+        offer.setPriority("CRITICAL");
+        offer.setPersonalization(
+            "As a valued client with over ₹" + formatINR($customer.savingsBalance) + 
+            " in savings, you qualify for our exclusive Wealth Management service. " +
+            "Let us help you grow and protect your wealth."
+        );
+        context.addOffer(offer);
+end
+
+rule "Retirement Age - Managed Retirement Account"
+    salience 85
+    when
+        $customer : CustomerProfile(
+            age >= 45,
+            age <= 65,
+            annualIncome >= 4166666,
+            hasRetirementAccount == false
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-010");
+        offer.setProductName("Managed Retirement Account");
+        offer.setScore(0.81);
+        offer.setReason("Retirement planning recommended for age group");
+        offer.setChannel("Email");
+        offer.setPriority("MEDIUM");
+        offer.setPersonalization(
+            "Planning for retirement? Our Managed Retirement Account offers " +
+            "tax advantages and professional management tailored to your goals."
+        );
+        context.addOffer(offer);
+end
+
+rule "College Age Children - 529 Plan"
+    salience 75
+    when
+        $customer : CustomerProfile(
+            hasChildrenAge(0, 18) == true,
+            has529Plan == false
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-017");
+        offer.setProductName("College Savings 529");
+        offer.setScore(0.78);
+        offer.setReason("Children in college-savings age range");
+        offer.setChannel("Email");
+        offer.setPriority("MEDIUM");
+        offer.setPersonalization(
+            "Start saving for your children's education with tax-advantaged " +
+            "529 plans. The earlier you start, the more your money grows."
+        );
+        context.addOffer(offer);
+end
+
+# ============================================================================
+# RULE SET 2: CREDIT CARD CROSS-SELL
+# ============================================================================
+
+rule "Travel Pattern - Travel Rewards Card"
+    salience 90
+    when
+        $customer : CustomerProfile(
+            monthlyTravelSpend >= 83333,
+            hasTravelRewardsCard == false,
+            creditScore >= 720
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-004");
+        offer.setProductName("Travel Rewards Card");
+        offer.setScore(0.85);
+        offer.setReason("High travel spending detected");
+        offer.setChannel("MobileApp");
+        offer.setPriority("HIGH");
+        offer.setPersonalization(
+            "You spend ₹" + formatINR($customer.monthlyTravelSpend) + " monthly on travel. " +
+            "Earn 3X points on all travel and dining purchases with our Travel Rewards Card!"
+        );
+        context.addOffer(offer);
+end
+
+rule "High Spending - Premium Card Upgrade"
+    salience 85
+    when
+        $customer : CustomerProfile(
+            monthlyCardSpend >= 416666,
+            currentCardTier != "PLATINUM",
+            creditScore >= 780,
+            customerTier in ("Platinum", "PrivateBanking")
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-005");
+        offer.setProductName("Platinum Elite Card");
+        offer.setScore(0.89);
+        offer.setReason("High monthly spending qualifies for premium card");
+        offer.setChannel("PersonalBanker");
+        offer.setPriority("HIGH");
+        offer.setPersonalization(
+            "Your ₹" + formatINR($customer.monthlyCardSpend) + " monthly spend qualifies you " +
+            "for our Platinum Elite Card with 5X points and luxury benefits."
+        );
+        context.addOffer(offer);
+end
+
+rule "Cash Back Opportunity - Basic Spender"
+    salience 70
+    when
+        $customer : CustomerProfile(
+            monthlyDebitSpend >= 125000,
+            hasCashBackCard == false,
+            creditScore >= 680
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-003");
+        offer.setProductName("Cash Back Credit Card");
+        offer.setScore(0.74);
+        offer.setReason("High debit spending - credit card opportunity");
+        offer.setChannel("OnlineBanking");
+        offer.setPriority("MEDIUM");
+        offer.setPersonalization(
+            "Switch your debit purchases to credit and earn 2% cash back! " +
+            "That's ₹" + formatINR($customer.monthlyDebitSpend * 0.02) + " monthly back in your pocket."
+        );
+        context.addOffer(offer);
+end
+
+rule "High Utilization - Balance Transfer"
+    salience 80
+    when
+        $customer : CustomerProfile(
+            creditUtilization >= 70,
+            creditScore >= 680,
+            totalCreditCardBalance >= 208333
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-003");
+        offer.setProductName("Cash Back Credit Card");
+        offer.setScore(0.79);
+        offer.setReason("High credit utilization - balance transfer opportunity");
+        offer.setChannel("Email");
+        offer.setPriority("HIGH");
+        offer.setPersonalization(
+            "Save on interest! Transfer your ₹" + formatINR($customer.totalCreditCardBalance) +
+            " balance to our card with 0% APR for 12 months."
+        );
+        context.addOffer(offer);
+end
+
+# ============================================================================
+# RULE SET 3: LOAN CROSS-SELL
+# ============================================================================
+
+rule "Auto Purchase Pattern - Auto Loan"
+    salience 88
+    when
+        $event : TransactionEvent(
+            merchantCategory == "AUTOMOTIVE",
+            amount >= 416666
+        )
+        $customer : CustomerProfile(
+            customerId == $event.customerId,
+            hasAutoLoan == false,
+            creditScore >= 700
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-007");
+        offer.setProductName("Auto Loan");
+        offer.setScore(0.87);
+        offer.setReason("Large automotive purchase detected");
+        offer.setChannel("MobileApp");
+        offer.setPriority("HIGH");
+        offer.setExpiryHours(72);
+        offer.setPersonalization(
+            "Financing your vehicle? Get pre-approved for our Auto Loan " +
+            "with rates as low as 4.25% APR. Quick approval!"
+        );
+        context.addOffer(offer);
+end
+
+rule "Rent Payments - Mortgage Pre-Approval"
+    salience 92
+    when
+        $customer : CustomerProfile(
+            hasRecurringPayment("RENT", >= 125000) == true,
+            hasMortgage == false,
+            creditScore >= 720,
+            annualIncome >= 6666666,
+            employmentStability >= 24  // months
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-008");
+        offer.setProductName("Mortgage");
+        offer.setScore(0.90);
+        offer.setReason("Regular rent payments - mortgage opportunity");
+        offer.setChannel("PersonalBanker");
+        offer.setPriority("CRITICAL");
+        offer.setPersonalization(
+            "Stop paying ₹" + formatINR($customer.monthlyRent) + " in rent! " +
+            "Get pre-approved for a mortgage and start building equity in your own home."
+        );
+        context.addOffer(offer);
+end
+
+rule "Home Equity - HELOC Opportunity"
+    salience 80
+    when
+        $customer : CustomerProfile(
+            hasMortgage == true,
+            mortgageAge >= 60,  // months
+            homeEquity >= 20833333,
+            hasHomeEquityLine == false,
+            creditScore >= 740
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-015");
+        offer.setProductName("Home Equity Line");
+        offer.setScore(0.83);
+        offer.setReason("Significant home equity available");
+        offer.setChannel("Email");
+        offer.setPriority("MEDIUM");
+        offer.setPersonalization(
+            "You have ₹" + formatINR($customer.homeEquity) + " in home equity. " +
+            "Access it with a flexible Home Equity Line of Credit for home improvements, " +
+            "debt consolidation, or other major expenses."
+        );
+        context.addOffer(offer);
+end
+
+rule "Personal Loan - Debt Consolidation"
+    salience 75
+    when
+        $customer : CustomerProfile(
+            totalCreditCardBalance >= 208333,
+            numberOfCreditCards >= 3,
+            creditScore >= 680,
+            hasPersonalLoan == false
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-006");
+        offer.setProductName("Personal Loan");
+        offer.setScore(0.76);
+        offer.setReason("Multiple high-balance cards - consolidation opportunity");
+        offer.setChannel("OnlineBanking");
+        offer.setPriority("MEDIUM");
+        offer.setPersonalization(
+            "Simplify your finances! Consolidate ₹" + formatINR($customer.totalCreditCardBalance) +
+            " in credit card debt into one low-rate personal loan. Save on interest."
+        );
+        context.addOffer(offer);
+end
+
+# ============================================================================
+# RULE SET 4: SAVINGS PRODUCT CROSS-SELL
+# ============================================================================
+
+rule "High Checking Balance - Savings Account"
+    salience 70
+    when
+        $customer : CustomerProfile(
+            checkingBalance >= 833333,
+            savingsBalance < 416666
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-002");
+        offer.setProductName("High-Yield Savings");
+        offer.setScore(0.72);
+        offer.setReason("High checking balance - savings opportunity");
+        offer.setChannel("OnlineBanking");
+        offer.setPriority("MEDIUM");
+        offer.setPersonalization(
+            "Your checking account balance is ₹" + formatINR($customer.checkingBalance) + ". " +
+            "Move excess funds to our High-Yield Savings and earn 2.5% APY!"
+        );
+        context.addOffer(offer);
+end
+
+rule "Premium Savings - High Net Worth"
+    salience 75
+    when
+        $customer : CustomerProfile(
+            totalAssets >= 41666666,
+            hasPremiumSavings == false,
+            customerTier in ("Gold", "Platinum", "PrivateBanking")
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-020");
+        offer.setProductName("Premium Savings");
+        offer.setScore(0.80);
+        offer.setReason("High net worth qualifies for premium savings");
+        offer.setChannel("PersonalBanker");
+        offer.setPriority("HIGH");
+        offer.setPersonalization(
+            "Earn premium interest rates of 3.25% APY on your savings. " +
+            "Exclusive to clients with ₹4.16Cr+ in assets."
+        );
+        context.addOffer(offer);
+end
+
+rule "CD Ladder - Conservative Investor"
+    salience 65
+    when
+        $customer : CustomerProfile(
+            savingsBalance >= 833333,
+            hasCDAccount == false,
+            riskTolerance == "CONSERVATIVE",
+            age >= 55
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-011");
+        offer.setProductName("CD Ladder 12-Month");
+        offer.setScore(0.70);
+        offer.setReason("Conservative investor profile");
+        offer.setChannel("Email");
+        offer.setPriority("LOW");
+        offer.setPersonalization(
+            "Guaranteed returns with our 12-Month CD at 3.0% APY. " +
+            "Safe, secure, and FDIC insured."
+        );
+        context.addOffer(offer);
+end
+
+rule "Money Market - High Balance Checking"
+    salience 72
+    when
+        $customer : CustomerProfile(
+            checkingBalance >= 2083333,
+            hasMoneyMarketAccount == false,
+            customerTier in ("Gold", "Platinum")
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-012");
+        offer.setProductName("Money Market Account");
+        offer.setScore(0.74);
+        offer.setReason("High checking balance - money market opportunity");
+        offer.setChannel("OnlineBanking");
+        offer.setPriority("MEDIUM");
+        offer.setPersonalization(
+            "Earn 1.75% APY on your funds while keeping them accessible. " +
+            "Our Money Market Account offers higher returns than checking."
+        );
+        context.addOffer(offer);
+end
+
+# ============================================================================
+# RULE SET 5: BUSINESS BANKING CROSS-SELL
+# ============================================================================
+
+rule "Business Expenses - Business Checking"
+    salience 80
+    when
+        $customer : CustomerProfile(
+            hasBusinessExpensePattern == true,
+            monthlyBusinessSpend >= 208333,
+            hasBusinessChecking == false
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-014");
+        offer.setProductName("Business Checking");
+        offer.setScore(0.82);
+        offer.setReason("Business expense pattern detected");
+        offer.setChannel("Email");
+        offer.setPriority("HIGH");
+        offer.setPersonalization(
+            "Separate your business and personal finances. Our Business Checking " +
+            "offers online bill pay, merchant services, and dedicated support."
+        );
+        context.addOffer(offer);
+end
+
+rule "Small Business - Business Loan"
+    salience 78
+    when
+        $customer : CustomerProfile(
+            hasBusinessChecking == true,
+            businessAccountAge >= 12,  // months
+            avgBusinessRevenue >= 416666,
+            hasBusinessLoan == false,
+            businessCreditScore >= 700
+        )
+    then
+        ProductOffer offer = new ProductOffer();
+        offer.setProductCode("PRD-018");
+        offer.setProductName("Small Business Loan");
+        offer.setScore(0.80);
+        offer.setReason("Established business with good revenue");
+        offer.setChannel("BusinessBanker");
+        offer.setPriority("HIGH");
+        offer.setPersonalization(
+            "Grow your business with our Small Business Loan. " +
+            "Up to ₹4.16Cr at competitive rates. Quick approval process."
+        );
+        context.addOffer(offer);
+end
+
+# ============================================================================
+# RULE SET 6: NEGATIVE RULES (OFFER SUPPRESSION)
+# ============================================================================
+
+rule "Suppress - Recent Offer"
+    salience 200
+    when
+        $customer : CustomerProfile(
+            hasRecentOffer($productCode, 30) == true  // days
+        )
+    then
+        context.suppressOffer($productCode, "Recent offer within 30 days");
+end
+
+rule "Suppress - Low Engagement"
+    salience 195
+    when
+        $customer : CustomerProfile(
+            engagementScore < 20,
+            lastLoginDays > 90
+        )
+    then
+        context.suppressAllOffers("Low customer engagement");
+end
+
+rule "Suppress - Opt Out"
+    salience 200
+    when
+        $customer : CustomerProfile(
+            marketingOptOut == true ||
+            productCategory($productCode).optedOut == true
+        )
+    then
+        context.suppressOffer($productCode, "Customer opted out of marketing");
+end
+
+rule "Suppress - Recent Complaint"
+    salience 200
+    when
+        $customer : CustomerProfile(
+            hasRecentComplaint(30) == true  // days
+        )
+    then
+        context.suppressAllOffers("Recent customer complaint");
+end
+
+rule "Suppress - High Offer Fatigue"
+    salience 190
+    when
+        $customer : CustomerProfile(
+            offersReceived30Days >= 5,
+            offerAcceptanceRate < 0.05
+        )
+    then
+        context.suppressAllOffers("Offer fatigue - low acceptance rate");
+end
+
+# ============================================================================
+# RULE SET 7: OFFER PRIORITIZATION AND RANKING
+# ============================================================================
+
+rule "Rank Offers by Revenue Potential"
+    salience 50
+    when
+        $offers : List(size > 1) from context.getAllOffers()
+    then
+        context.rankOffers(
+            (offer1, offer2) -> {
+                double score1 = offer1.getScore() * offer1.getEstimatedRevenue();
+                double score2 = offer2.getScore() * offer2.getEstimatedRevenue();
+                return Double.compare(score2, score1);
+            }
+        );
+end
+
+rule "Limit Offers per Customer"
+    salience 45
+    when
+        $offers : List(size > 2) from context.getAllOffers()
+    then
+        context.limitOffers(2); // Max 2 offers per customer per interaction
+end
+
+rule "Channel Optimization"
+    salience 40
+    when
+        $customer : CustomerProfile(
+            preferredChannel != null
+        )
+        $offer : ProductOffer()
+    then
+        if ($customer.preferredChannel.equals("Email") && 
+            $offer.getChannel().equals("MobileApp")) {
+            $offer.setChannel($customer.preferredChannel);
+            $offer.setScore($offer.getScore() * 1.15); // Boost score for preferred channel
+        }
+end
